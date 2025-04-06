@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.7">
+  <title>Form</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      background-color: #f5faff;
+    }
+    form {
+      display: inline-block;
+      text-align: left;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    div {
+      margin-bottom: 10px;
+    }
+    label {
+      display: inline-block;
+      width: 120px;
+    }
+    input, textarea {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .preview {
+      background-color: orange;
+    }
+    .submit {
+      background-color: lightblue;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 10px;
+      display: inline-block;
+      text-align: left;
+      max-width: 90%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #e0f7ff;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>แบบฟอร์มลงทะเบียน</h1>
+
+  <form id="registerForm">
+    <div><label>ชื่อจริง</label><input type="text" name="ชื่อจริง"></div>
+    <div><label>นามสกุล</label><input type="text" name="นามสกุล"></div>
+    <div><label>อีเมล</label><input type="email" name="อีเมล"></div>
+    <div><label>รหัสผ่าน</label><input type="password" name="รหัสผ่าน"></div>
+    <div><label>ที่อยู่</label><br><textarea name="ที่อยู่" cols="30" rows="3"></textarea></div>
+    <div><label>อายุ</label><input type="number" name="อายุ" value="5"></div>
+    <div><label>วันเกิด</label><input type="date" name="วันเกิด"></div>
+    <div><label>เบอร์โทรศัพท์</label><input type="tel" name="เบอร์โทรศัพท์"></div>
+    <div><label>สีที่ชอบ</label><input type="color" name="สีที่ชอบ"></div>
+    <div><label>ช่วงตัวเลข</label><input type="range" name="ช่วงตัวเลข" value="50"></div>
+    
+    <div style="text-align: center;">
+      <button type="button" class="preview" onclick="previewData()">ดูตัวอย่าง</button>
+      <button type="submit" class="submit">ส่งข้อมูล</button>
+    </div>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    function getFormData(form) {
+      const formData = new FormData(form);
+      const dataObject = {};
+      for (let [key, value] of formData.entries()) {
+        if (value !== "") {
+          dataObject[key] = value;
+        }
+      }
+      return dataObject;
+    }
+
+    function previewData() {
+      const form = document.getElementById("registerForm");
+      const data = getFormData(form);
+      const resultDiv = document.getElementById("result");
+      
+      let html = `<table><tr><th>ช่อง</th><th>ข้อมูล</th></tr>`;
+      for (let key in data) {
+        html += `<tr><td>${key}</td><td>${data[key]}</td></tr>`;
+      }
+      html += `</table>`;
+      resultDiv.innerHTML = html;
+    }
+
+    function downloadJSON(data) {
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[:.]/g, '-');
+      const fileName = `form_data_${timestamp}.json`;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const data = getFormData(e.target);
+
+      // แสดงผลแบบตาราง
+      previewData();
+
+      // ดาวน์โหลดไฟล์ JSON
+      downloadJSON(data);
+
+      // ล้างข้อมูล
+      e.target.reset();
+    });
+  </script>
+
+</body>
+</html>
